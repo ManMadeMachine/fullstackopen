@@ -1,6 +1,11 @@
 import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
 
+const Header = ({text}) => {
+    return (
+        <h1><b>{text}</b></h1>
+    );
+};
 
 const App = (props) => {
     const [selected, setSelected] = useState(0);
@@ -18,10 +23,17 @@ const App = (props) => {
         setPoints(newPoints);
     }
 
+    const highestRankingIndex = () => {
+        // Get the index of the highest ranking element in the points array.
+        // Copying the points array with ... so that we don't mess with the state.
+        return points.indexOf(Math.max(...points));
+    }
+
     return (
         <div>
-            <h3><b>{props.anecdotes[selected]}</b></h3>
-            <h3>Has {points[selected]} votes</h3>
+            <Header text="Anecdote of the day" />
+            <h4>{props.anecdotes[selected]}</h4>
+            <p>Has {points[selected]} votes</p>
 
             <button onClick={vote}>
                 Vote
@@ -30,6 +42,9 @@ const App = (props) => {
             <button onClick={selectRandom}>
                 Pick random!
             </button>
+
+            <Header text="Anecdote with most votes" />
+            <p>{props.anecdotes[highestRankingIndex()]}</p>
         </div>
     );
 };
