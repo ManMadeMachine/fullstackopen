@@ -11,7 +11,15 @@ const Button = ({onClick, text}) => {
     );
 };
 
-const Statistic = ({label, value, postFix}) => <p>{label} {value} {postFix}</p>;
+const Statistic = ({label, value, postFix}) => {
+    return(
+    <tr>
+        <td>{label}</td>
+        <td>{value}</td>
+        <td>{postFix}</td>
+    </tr>
+    );
+}
 
 const Statistics = (props) => {
     const {good, neutral, bad, total, average, positivePercentage} = props.stats;
@@ -24,12 +32,16 @@ const Statistics = (props) => {
 
     return(
         <div>
-            <Statistic label="good" value={good} />
-            <Statistic label="neutral" value={neutral} />
-            <Statistic label="bad" value={bad} />
-            <Statistic label="all" value={total} />
-            <Statistic label="average" value={average} />
-            <Statistic label="positive" value={positivePercentage} postFix="%" />
+            <table>
+                <tbody>
+                    <Statistic label="good" value={good} />
+                    <Statistic label="neutral" value={neutral} />
+                    <Statistic label="bad" value={bad} />
+                    <Statistic label="all" value={total} />
+                    <Statistic label="average" value={average} />
+                    <Statistic label="positive" value={positivePercentage} postFix="%" />
+                </tbody>
+            </table>
         </div>
     );
 };
