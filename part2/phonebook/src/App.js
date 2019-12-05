@@ -1,48 +1,7 @@
 import React, {useState} from 'react';
-
-const Filter = (props) => {
-  const {changeHandler, searchFilter} = props;
-  return (
-    <div>
-      filter shown with <input onChange={changeHandler} value={searchFilter}/>
-    </div>
-  );
-};
-
-const PersonForm = (props) => {
-  const {nameChangeHandler, name, numberChangeHandler, number, submitHandler} = props;
-  return(
-    <form>
-      <div>
-        name: <input onChange={nameChangeHandler} value={name}/>
-      </div>
-      <div>
-        number: <input onChange={numberChangeHandler} value={number}/>
-      </div>
-      <div>
-        <button type="submit" onClick={submitHandler}>add</button>
-      </div>
-    </form>
-  );
-};
-
-const Persons = ({persons}) => {
-  const personRows = () => {
-    return persons.map(person => <Person key={person.name} person={person} />)
-  };
-
-  return(
-    <div>
-      {personRows()}
-    </div>
-  );
-};
-
-const Person = ({person}) => {
-  return(
-    <p>{person.name} {person.number}</p>
-  );
-};
+import Filter from './components/Filter';
+import PersonForm from './components/PersonForm';
+import Persons from './components/Persons';
 
 const App = () =>  {
   const [persons, setPersons] = useState([
@@ -80,7 +39,7 @@ const App = () =>  {
     setNewNumber('');
   };
 
-  // forcing names to lowercase in filtering to make the filter case insensitive
+  // use lowercase names to make the filter case insensitive
   const filteredPersons = persons.filter(person => 
       person.name.toLowerCase().includes(searchFilter.toLowerCase())
   );
