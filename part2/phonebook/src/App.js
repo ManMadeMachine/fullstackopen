@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
+import Notification from './components/Notification';
 
 import personsService from './services/persons';
 
@@ -10,6 +11,7 @@ const App = () =>  {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState(''); 
   const [searchFilter, setSearchFilter] = useState('');
+  const [notification, setNotification] = useState({type: 'info', message: null});
 
   useEffect(() => {
     personsService.getAll()
@@ -30,6 +32,13 @@ const App = () =>  {
     setSearchFilter(event.target.value);
   };
 
+  const showNotification = (type, message) => {
+    setNotification({type, message});
+    setTimeout(() => {
+        setNotification({type: 'info', message: null});
+    }, 5000);
+  };
+
   const addOrUpdatePerson = (event) => {
     event.preventDefault();
     const existingPerson = persons.find((person) => person.name === newName);
@@ -43,6 +52,7 @@ const App = () =>  {
         personsService.updateNumber(existingPerson.id, changedPerson)
             .then(returnedPerson => {
               setPersons(persons.map(p => p.id !== changedPerson.id ? p : returnedPerson));
+              showNotification('info', `Updated ${changedPerson.name}`);
             });
       }
 
@@ -57,6 +67,7 @@ const App = () =>  {
             setPersons(persons.concat(returnedPerson));
             setNewName('');
             setNewNumber('');
+            showNotification('info', `Added ${returnedPerson.name}`);
         });
   };
 
@@ -65,6 +76,10 @@ const App = () =>  {
       personsService.deleteById(person.id)
       .then(() => {
         setPersons(persons.filter(p => p.id !== person.id));
+      })
+      .catch(error => {
+        setPersons(persons.filter(p => p.id !== person.id));
+        showNotification('error', `Information of ${person.name} has already been removed from the server`);
       });
     }
   };
@@ -77,6 +92,9 @@ const App = () =>  {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification type={notification.type} message={notification.message} />
+
       <Filter changeHandler={filterChangeHandler} searchFilter={searchFilter} />
 
       <h3>Add person</h3>
