@@ -30,13 +30,26 @@ const App = () =>  {
     setSearchFilter(event.target.value);
   };
 
-  const addPerson = (event) => {
+  const addOrUpdatePerson = (event) => {
     event.preventDefault();
-    const existingName = persons.find((person) => person.name === newName);
-    if (existingName){
-      alert(`${newName} already exists in the phonebook!`);
+    const existingPerson = persons.find((person) => person.name === newName);
+    
+    if (existingPerson){
+      const replace = window.confirm(`${newName} is already added in the phonebook,
+                                      replace the old number with a new one?`);
+      if (replace) {
+        // Update existing persons number
+        const changedPerson = {...existingPerson, number: newNumber};
+        personsService.updateNumber(existingPerson.id, changedPerson)
+            .then(returnedPerson => {
+              setPersons(persons.map(p => p.id !== changedPerson.id ? p : returnedPerson));
+            });
+      }
+
       return;
     }
+
+    // Add new person
     const newPerson = {name: newName, number: newNumber};
 
     personsService.create(newPerson)
@@ -72,7 +85,7 @@ const App = () =>  {
          name={newName}
          numberChangeHandler={numberChangeHandler}
          number={newNumber}
-         submitHandler={addPerson} />
+         submitHandler={addOrUpdatePerson} />
 
       <h3>Numbers</h3>
       <Persons persons={filteredPersons} deleteHandler={deletePerson} />
