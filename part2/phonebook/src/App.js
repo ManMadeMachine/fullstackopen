@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import axios from 'axios';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
+
+import personsService from './services/persons';
 
 const App = () =>  {
   const [persons, setPersons] = useState([]);
@@ -11,11 +12,10 @@ const App = () =>  {
   const [searchFilter, setSearchFilter] = useState('');
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(res => {
-        setPersons(res.data);
-      });
+    personsService.getAll()
+        .then(persons => {
+            setPersons(persons);
+        });
   }, []);
 
   const nameChangeHandler = (event) => {
@@ -37,10 +37,23 @@ const App = () =>  {
       alert(`${newName} already exists in the phonebook!`);
       return;
     }
+    const newPerson = {name: newName, number: newNumber};
 
-    setPersons(persons.concat({name: newName, number: newNumber}));
-    setNewName('');
-    setNewNumber('');
+    personsService.create(newPerson)
+        .then(returnedPerson => {
+            setPersons(persons.concat(returnedPerson));
+            setNewName('');
+            setNewNumber('');
+        });
+  };
+
+  const deletePerson = (person) => {
+    if (window.confirm(`Delete ${person.name}`)){
+      personsService.deleteById(person.id)
+      .then(() => {
+        setPersons(persons.filter(p => p.id !== person.id));
+      });
+    }
   };
 
   // use lowercase names to make the filter case insensitive
@@ -62,7 +75,7 @@ const App = () =>  {
          submitHandler={addPerson} />
 
       <h3>Numbers</h3>
-      <Persons persons={filteredPersons} />
+      <Persons persons={filteredPersons} deleteHandler={deletePerson} />
     </div>
   );
 }
