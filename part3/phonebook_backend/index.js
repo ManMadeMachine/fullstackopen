@@ -28,6 +28,15 @@ app.get('/api/notes', (req, res) => {
     res.json(persons);
 });
 
+app.get('/info', (req, res) => {
+    const info = {
+        'message': `The phonebook has info for ${persons.length} people`,
+        'timestamp': new Date()
+    };
+
+    res.send(`<p>${info.message}</p><p>${info.timestamp}</p>`);
+});
+
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
 });
