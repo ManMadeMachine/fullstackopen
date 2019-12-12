@@ -54,17 +54,36 @@ app.delete('/notes/:id', (req, res) => {
 })
 
 app.post('/notes', (req, res) => {
+    const body = req.body;
+
+    if (!body.content){
+        return res.status(400).json({
+            error: 'content missing'
+        });
+    }
+
     const maxId = notes.length > 0
         ? Math.max(...notes.map(n => n.id))
         : 0;
 
-    const note = req.body;
-    note.id = maxId + 1;
+    const note = {
+        id: generateId(),
+        content: body.content,
+        important: body.important || false,
+        date: new Date()
+    };
 
     notes = notes.concat(note);
 
     res.json(note);
-})
+});
+
+const generateId = () => {
+    const maxId = notes.length > 0
+        ? Math.max(...notes.map(n => n.id))
+        : 0;
+    return maxId + 1;
+}
 
 const PORT = 3001;
 app.listen(PORT, () => {
