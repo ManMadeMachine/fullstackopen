@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const morgan = require('morgan');
+
 const app = express();
 
 const PORT = 3001;
@@ -23,6 +25,12 @@ let persons = [
 ];
 
 app.use(bodyParser.json());
+
+morgan.token('post-data', (req, res) => {
+    return JSON.stringify(req.body);
+});
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'));
 
 app.get('/api/persons', (req, res) => {
     res.json(persons);
