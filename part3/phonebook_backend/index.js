@@ -4,7 +4,7 @@ const app = express();
 
 const PORT = 3001;
 
-const persons = [
+let persons = [
     {
         "name": "Arto hellas",
         "number": "040-123456",
@@ -37,6 +37,42 @@ app.get('/api/persons/:id', (req, res) => {
     } else {
         res.json(person);
     }
+});
+
+app.delete('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id);
+    persons = persons.filter(p => p.id !== id);
+
+    res.status(204).end();
+});
+
+app.post('/api/persons', (req, res) => {
+    const body = req.body;
+
+    if (!body.name || !body.number){
+        return res.status(400).json({
+            error: 'name or number was not given'
+        });
+    }
+
+    const existing = persons.find(p => p.name === body.name);
+
+    //Duplicate name
+    if(existing){
+        return res.status(400).json({
+            error: 'name must be unique'
+        });
+    }
+
+    const person = {
+        id: Math.floor(Math.random() * 2000),
+        name: body.name,
+        number: body.number
+    };
+
+    persons = persons.concat(person);
+
+    res.json(person);
 });
 
 app.get('/info', (req, res) => {
